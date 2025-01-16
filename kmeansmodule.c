@@ -1,3 +1,6 @@
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -551,5 +554,20 @@ int main(int argc, char* argv[]) {
 
   free_all_memory();
   exit(EXIT_SUCCESS);
+}
+
+
+static PyObject* k_means_plus_plus_c_wrapper(PyObject *self, PyObject *args) {
+  /* Wrapper takes in Points, Initial Centroids, K, Iter */
+  
+  PyObject* points;
+  PyObject* initial_centroids;
+
+  
+
+
+
+
+
 }
 

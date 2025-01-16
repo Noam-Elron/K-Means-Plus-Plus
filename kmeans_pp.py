@@ -22,27 +22,36 @@ def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
     List[List[float]]
         _description_
     """
+    print(dataframe)
+    print()
+    print()
+    print()
     np.random.seed(1234)
     centroids = []
-    rows = dataframe.size   
+    rows = dataframe.shape[0]
     initial_centroid_index = np.random.choice(list(range(rows)))
-    initial_centroid = dataframe.iloc[initial_centroid_index]
+    #print(f"Initial Centroid Index: {initial_centroid_index}")
+    initial_centroid = dataframe.iloc[initial_centroid_index].values
+    #print(f"Initial Centroid: {initial_centroid}")
     centroids.append(initial_centroid)
     dataframe.drop([initial_centroid_index], axis=0, inplace=True)
     
     while len(centroids) < K:
         total_dist = 0
-        distances = np.array([])
-        rows = dataframe.size
+        distances = []
+        # Each time we remove a row so we need to update the number of rows.
+        rows = rows - 1
 
-        for row in dataframe.values:
+        for i, row in enumerate(dataframe.values):
+            #print(f"Calculating closest centroid to Row {i}: {row}")
             closest_centroid_distance = closest_cluster_distance(centroids, row)
             distances.append(closest_centroid_distance)
             total_dist += closest_centroid_distance
-
+        
         probabilities = calc_probabilities(distances, total_dist)
-        centroid_index = np.random.choice(list(range(rows)), p=probabilities)
-        centroid = dataframe.iloc[centroid_index]
+        #print(f"len probablities: {len(probabilities)}, rows: {rows}")
+        centroid_index = np.random.choice(list(range(rows)), p=probabilities) 
+        centroid = dataframe.iloc[centroid_index].values
         centroids.append(centroid)
         dataframe.drop([centroid_index], axis=0, inplace=True)
     
@@ -119,6 +128,7 @@ def euclidean_distance(point, other) -> float:
         _description_
         
     """
+    #print(f"Other: {other}")
     total = 0
     for i in range(len(point)):
         total += pow((point[i] - other[i]), 2)
@@ -139,7 +149,6 @@ def closest_cluster_distance(found_centroids, point) -> int:
     int
         Distance between point and the nearest centroid of those that have been discovered so far.
     """
-
     closest_dist = euclidean_distance(point, found_centroids[0])
     for i in range(1, len(found_centroids)):
         dist = euclidean_distance(point, found_centroids[i])
@@ -148,7 +157,8 @@ def closest_cluster_distance(found_centroids, point) -> int:
     return closest_dist
 
 
-if __name__ == "__main__":
+
+def main():
     args: argparse.Namespace = parse()
     K, iterations, epsilon, file_name_1, file_name_2 = args.K, args.iter, args.epsilon, args.file_name_1, args.file_name_2
     
@@ -161,7 +171,20 @@ if __name__ == "__main__":
     except ValueError:
         print("An Error has Occurred")
 
+    if iter >= 1000 or iter <= 1 or type(iter) != int:
+        print("Invalid maximum iteration!")
+        return
+
     points_dataframe = read_files(file_name_1, file_name_2)
+    num_points = points_dataframe.shape[0]
+
+    if K <= 1 or K >= num_points or type(K) != int:
+        print("Invalid number of clusters!")
+        return
 
     centroids = kmeansplusplus(K, points_dataframe)
     print(centroids)
+    return
+
+if __name__ == "__main__":
+    main()
