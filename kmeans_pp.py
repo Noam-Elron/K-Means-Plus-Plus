@@ -3,7 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 import math
+import mykmeanssp 
 from typing import List, Union
+
 
 def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
     """
@@ -22,16 +24,16 @@ def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
     List[List[float]]
         _description_
     """
-    print(dataframe)
-    print()
-    print()
-    print()
+    #print(dataframe)
+    #print()
+    #print()
+    #print()
     np.random.seed(1234)
     centroids = []
     rows = dataframe.shape[0]
     initial_centroid_index = np.random.choice(list(range(rows)))
     #print(f"Initial Centroid Index: {initial_centroid_index}")
-    initial_centroid = dataframe.iloc[initial_centroid_index].values
+    initial_centroid = dataframe.iloc[initial_centroid_index].values.tolist()
     #print(f"Initial Centroid: {initial_centroid}")
     centroids.append(initial_centroid)
     dataframe.drop([initial_centroid_index], axis=0, inplace=True)
@@ -51,7 +53,7 @@ def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
         probabilities = calc_probabilities(distances, total_dist)
         #print(f"len probablities: {len(probabilities)}, rows: {rows}")
         centroid_index = np.random.choice(list(range(rows)), p=probabilities) 
-        centroid = dataframe.iloc[centroid_index].values
+        centroid = dataframe.iloc[centroid_index].values.tolist()
         centroids.append(centroid)
         dataframe.drop([centroid_index], axis=0, inplace=True)
     
@@ -165,26 +167,37 @@ def main():
     try:
         K = int(K)
         iterations = int(iterations)
+        epsilon = float(epsilon)
         filepath1 = os.path.join(os.getcwd(), file_name_1)
         filepath2 = os.path.join(os.getcwd(), file_name_2)
 
     except ValueError:
         print("An Error has Occurred")
+    
+    if iterations >= 1000 or iterations <= 1 or type(iterations) != int:
 
-    if iter >= 1000 or iter <= 1 or type(iter) != int:
         print("Invalid maximum iteration!")
         return
 
     points_dataframe = read_files(file_name_1, file_name_2)
     num_points = points_dataframe.shape[0]
-
+    
     if K <= 1 or K >= num_points or type(K) != int:
         print("Invalid number of clusters!")
         return
 
     centroids = kmeansplusplus(K, points_dataframe)
-    print(centroids)
-    return
+    points = points_dataframe.astype(float).values.tolist()
+    
+    final_centroids = mykmeanssp.fit(points, centroids, K, iterations, epsilon)
+    print(f"Initial centroids: {centroids}")
+    print(f"Final centroids: {final_centroids}")
+    return 
+
 
 if __name__ == "__main__":
     main()
+
+
+
+
