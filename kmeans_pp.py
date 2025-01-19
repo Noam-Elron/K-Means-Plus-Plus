@@ -188,9 +188,9 @@ def main():
 
     centroids = kmeansplusplus(K, points_dataframe)
     points = points_dataframe.astype(float).values.tolist()
-    
-    final_centroids = mykmeanssp.fit(points, centroids, K, iterations, epsilon)
     print(f"Initial centroids: {centroids}")
+    final_centroids = mykmeanssp.fit(points, centroids, K, iterations, epsilon)
+    
     print(f"Final centroids: {final_centroids}")
     return 
 

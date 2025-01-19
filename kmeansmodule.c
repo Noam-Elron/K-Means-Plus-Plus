@@ -702,6 +702,10 @@ static PyObject* k_means_plus_plus_c_wrapper(PyObject *self, PyObject *args) {
   struct CentroidsList* centroids_list_ptr = unpack_centroids_list(initial_centroids);
   num_points = PyList_Size(points);
 
+
+  print_centroids(centroids_list_ptr);
+  
+
   lists = malloc(sizeof(struct Lists));
 
   if (lists == NULL) {
@@ -716,6 +720,8 @@ static PyObject* k_means_plus_plus_c_wrapper(PyObject *self, PyObject *args) {
   kmeans(lists, K, iter, epsilon, num_points);
 
   final_centroids = convert_centroids_pyobject(centroids_list_ptr, K);
+  free_all_memory();
+
   return final_centroids;
 }
 
