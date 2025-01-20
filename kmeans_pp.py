@@ -24,19 +24,13 @@ def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
     List[List[float]]
         _description_
     """
-    #print(dataframe)
-    #print()
-    #print()
-    #print()
     np.random.seed(1234)
     centroids = []
     rows = dataframe.shape[0]
     initial_centroid_index = np.random.choice(list(range(rows)))
-    #print(f"Initial Centroid Index: {initial_centroid_index}")
     initial_centroid = dataframe.iloc[initial_centroid_index].values.tolist()
-    #print(f"Initial Centroid: {initial_centroid}")
     centroids.append(initial_centroid)
-    dataframe.drop([initial_centroid_index], axis=0, inplace=True)
+    dataframe.drop(dataframe.index[initial_centroid_index], axis=0, inplace=True)
     
     while len(centroids) < K:
         total_dist = 0
@@ -45,17 +39,15 @@ def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
         rows = rows - 1
 
         for i, row in enumerate(dataframe.values):
-            #print(f"Calculating closest centroid to Row {i}: {row}")
             closest_centroid_distance = closest_cluster_distance(centroids, row)
             distances.append(closest_centroid_distance)
             total_dist += closest_centroid_distance
         
         probabilities = calc_probabilities(distances, total_dist)
-        #print(f"len probablities: {len(probabilities)}, rows: {rows}")
         centroid_index = np.random.choice(list(range(rows)), p=probabilities) 
         centroid = dataframe.iloc[centroid_index].values.tolist()
-        centroids.append(centroid)
-        dataframe.drop([centroid_index], axis=0, inplace=True)
+        centroids.append(centroid)  
+        dataframe.drop(dataframe.index[centroid_index], axis=0, inplace=True)
 
     return centroids
 
@@ -130,7 +122,6 @@ def euclidean_distance(point, other) -> float:
         _description_
         
     """
-    #print(f"Other: {other}")
     total = 0
     for i in range(len(point)):
         total += pow((point[i] - other[i]), 2)
@@ -187,17 +178,14 @@ def main():
         return
 
     centroids = kmeansplusplus(K, points_dataframe)
+
     points = points_dataframe.astype(float).values.tolist()
     points.extend(centroids)
 
-    print(f"Initial centroids: {centroids}")
-    print(f"Number of points: {len(points)}")
-    for i, point in enumerate(points):
-        print(f"Point {i+1}: {point}")
-    print()
     final_centroids = mykmeanssp.fit(points, centroids, K, iterations, epsilon)
     
-    print(f"Final centroids: {final_centroids}")
+    for row in final_centroids:
+        print(','.join(['%.4f' % num for num in row]))
     return 
 
 

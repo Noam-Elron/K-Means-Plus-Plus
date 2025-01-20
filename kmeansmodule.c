@@ -168,13 +168,10 @@ void print_point(struct Point* ptr) {
 
 void print_points(const struct PointsList* list) {
   struct Point* ptr = list->head;
-  int i = 1;
 
   while(ptr != NULL) {
-    printf("point #%d: ", i);
     print_point(ptr);
     ptr = ptr->next;
-    i++;
   }
 }
 
@@ -201,7 +198,6 @@ void add_coord(struct Point* point, double val) {
 
   if (ptr == NULL) {
     free_all_memory();
-    printf("1 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -224,7 +220,6 @@ void add_point(struct PointsList* list) {
 
   if (ptr == NULL) {
     free_all_memory();
-    printf("2 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -248,7 +243,6 @@ void add_centroid(struct CentroidsList* list, struct Point* point) {
 
   if (centroid == NULL) {
     free_all_memory();
-    printf("3 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -273,7 +267,6 @@ struct Point* deep_copy_point(struct Point* point) {
 
   if (deep_copy == NULL) {
     free_all_memory();
-    printf("4 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -346,7 +339,6 @@ struct CentroidsList* initialize_centroids(const struct PointsList* points_list,
 
   if (centroid_list_ptr == NULL || prev_centroid == NULL) {
     free_all_memory();
-    printf("5 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -365,7 +357,6 @@ struct CentroidsList* initialize_centroids(const struct PointsList* points_list,
 
     if (curr_centroid_ptr == NULL) {
       free_all_memory();
-      printf("6 :( \n");
       printf("An Error has Occurred\n");
       exit(EXIT_FAILURE);
     }
@@ -460,7 +451,6 @@ struct PointsList *parse() {
 
   if (points_list_ptr == NULL) {
     free_all_memory();
-    printf("7 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -503,7 +493,6 @@ struct PointsList* unpack_points_list(PyObject *points_list_py_ptr) {
   struct PointsList* points_list_ptr = malloc(sizeof(struct PointsList));
 
   if (points_list_ptr == NULL) {
-    printf("8 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -513,13 +502,11 @@ struct PointsList* unpack_points_list(PyObject *points_list_py_ptr) {
 
   num_points = PyList_Size(points_list_py_ptr);
 
-  printf("num points: %ld\n", num_points);
 
   for (i = 0; i < num_points; i++) {
     add_point(points_list_ptr);
     py_point = PyList_GetItem(points_list_py_ptr, i);
     if (!PyList_Check(py_point)) {
-      printf("9 :( \n");
       printf("An Error has Occurred\n");
       exit(EXIT_FAILURE);
     }
@@ -527,7 +514,6 @@ struct PointsList* unpack_points_list(PyObject *points_list_py_ptr) {
     for (j = 0; j < num_coords; j++) {
       py_coord = PyList_GetItem(py_point, j);
       if (Py_IS_TYPE(py_coord, &PyFloat_Type) == 0) {
-        printf("10:( \n");
         printf("An Error has Occurred\n");
         exit(EXIT_FAILURE);
       }
@@ -547,13 +533,11 @@ struct CentroidsList* unpack_centroids_list(PyObject *centroids_list_py_ptr) {
   struct PointsList *temp_list_ptr = malloc(sizeof(struct PointsList));
 
   if (centroids_list_ptr == NULL) {
-    printf("11 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
 
   if (temp_list_ptr == NULL) {
-    printf("12 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   } 
@@ -582,34 +566,28 @@ PyObject* convert_centroids_pyobject(struct CentroidsList* centroid_list_ptr, in
   PyObject* temp_coord_py;
   
   if (centroids_list_py_ptr == NULL) {
-    printf("13 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
   
   for (i = 0; i < K; i++) {
-    /*printf("Iteration number %d in convert_centroids_pyobject\n", i);*/
     temp_list_py = PyList_New(0);
     
     if (temp_list_py == NULL) {
-      printf("14 :( \n");
       printf("An Error has Occurred\n");
       exit(EXIT_FAILURE);
     }
     
     curr_coord_ptr = curr_centroid_ptr->centroid->head;
     while(curr_coord_ptr != NULL) {
-      /*printf("Adding coordinate: %f to temp_list_py\n", curr_coord_ptr->val);*/
       temp_coord_py = PyFloat_FromDouble(curr_coord_ptr->val);
       if (temp_coord_py == NULL) {
-        printf("15.1 :( \n");
         printf("An Error has Occurred\n");
         exit(EXIT_FAILURE);
       }
       appended = PyList_Append(temp_list_py, temp_coord_py);
       
       if (appended == -1) {
-        printf("15.2 :( \n");
         printf("An Error has Occurred\n");
         exit(EXIT_FAILURE);
       }
@@ -619,8 +597,8 @@ PyObject* convert_centroids_pyobject(struct CentroidsList* centroid_list_ptr, in
 
     curr_centroid_ptr = curr_centroid_ptr->next;
     appended = PyList_Append(centroids_list_py_ptr, temp_list_py);
+
     if (appended == -1) {
-      printf("16 :( \n");
       printf("An Error has Occurred\n");
       exit(EXIT_FAILURE);
     }
@@ -644,8 +622,6 @@ void kmeans(struct Lists *lists, int K, int iter, double epsilon) {
   struct PointsList *points_list_ptr = *(lists->points_list_address);
   struct CentroidsList *centroid_list_ptr = *(lists->centroids_list_address);
   curr_point = points_list_ptr->head;
-  
-  
 
   num_points = 0;
   curr_point = points_list_ptr->head;
@@ -655,16 +631,11 @@ void kmeans(struct Lists *lists, int K, int iter, double epsilon) {
     curr_point = curr_point->next;
   }
 
-
-  /* Need to change initialize centroids to implementation required in the pdf */
-
   curr_centroid_ptr = NULL;
   converge = 1;
   closest_cluster = NULL;
   delta = 0.0;
   
-
-  printf("Iter: %d\n", iter);
   /* Perform K-Means iter times */
   for (i = 0; i < iter; i++) {
     /* Go over all points to assign the closest cluster*/
@@ -680,20 +651,15 @@ void kmeans(struct Lists *lists, int K, int iter, double epsilon) {
     for (m = 0; m < K; m++) {
       delta = finalize_next_centroid_pos(&curr_centroid_ptr);
       curr_centroid_ptr = curr_centroid_ptr->next;
-      printf("Delta: %f\n", delta);
       if (delta > epsilon) {
         converge = 0;
       }
     }
 
     if (converge) {
-      printf("FUCK\n");
       break;
     }
 
-    printf("In Loop, Iteration: %d:\n", i);
-    print_centroids(centroid_list_ptr);
-    printf("\n");
   }
 }
 
@@ -708,37 +674,25 @@ static PyObject* k_means_plus_plus_c_wrapper(PyObject *self, PyObject *args) {
   int iter;
   double epsilon;
   PyObject* final_centroids;
+  struct PointsList* points_list_ptr;
+  struct CentroidsList* centroids_list_ptr;
 
   if (!PyArg_ParseTuple(args, "OOiid", &points, &initial_centroids, &K, &iter, &epsilon)) {
-    printf("17 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
-
-  if (!PyList_Check(points) || !PyList_Check(initial_centroids)) {
-    printf("18 :( \n");
-    printf("An Error has Occurred\n");
-    exit(EXIT_FAILURE);
-  }
-
-  printf("K: %d\n", K);
-  printf("Iter: %d\n", iter);
-  printf("Epsilon: %f\n", epsilon);
-
-  struct PointsList* points_list_ptr = unpack_points_list(points);
-  struct CentroidsList* centroids_list_ptr = unpack_centroids_list(initial_centroids);
-
-  printf("Printing Points: \n");
-  print_points(points_list_ptr);
-  printf("\nFinished Printing Points, Printing Centroids now\n");
-  printf("Printing Centroids: \n");
-  print_centroids(centroids_list_ptr);
-  printf("\nFinished Printing Centroids\n\n");
   
+  if (!PyList_Check(points) || !PyList_Check(initial_centroids)) {
+    printf("An Error has Occurred\n");
+    exit(EXIT_FAILURE);
+  }
+
+  points_list_ptr = unpack_points_list(points);
+  centroids_list_ptr = unpack_centroids_list(initial_centroids);
+
  lists = malloc(sizeof(struct Lists));
 
   if (lists == NULL) {
-    printf("19 :( \n");
     printf("An Error has Occurred\n");
     exit(EXIT_FAILURE);
   }
@@ -746,15 +700,8 @@ static PyObject* k_means_plus_plus_c_wrapper(PyObject *self, PyObject *args) {
   lists->points_list_address = &points_list_ptr;
   lists->centroids_list_address = &centroids_list_ptr;
 
-  printf("Printing Centroids Before kmeans: \n");
-  print_centroids(centroids_list_ptr);
-  printf("\n");
 
   kmeans(lists, K, iter, epsilon);
-
-  printf("Printing Final Centroids: \n");
-  print_centroids(centroids_list_ptr);
-  printf("\n");
 
   final_centroids = convert_centroids_pyobject(centroids_list_ptr, K);
   free_all_memory();
