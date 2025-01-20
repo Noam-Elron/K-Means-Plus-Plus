@@ -56,7 +56,7 @@ def kmeansplusplus(K: int, dataframe: pd.DataFrame) -> List[List[float]]:
         centroid = dataframe.iloc[centroid_index].values.tolist()
         centroids.append(centroid)
         dataframe.drop([centroid_index], axis=0, inplace=True)
-    
+
     return centroids
 
         
@@ -96,8 +96,8 @@ def read_files(filepath1: str, filepath2: str) -> pd.DataFrame:
     df_file1: pd.DataFrame = pd.read_csv(filepath1, header=None)
     df_file2: pd.DataFrame = pd.read_csv(filepath2, header=None)
     inner_join_df: pd.DataFrame = pd.merge(df_file1, df_file2, how='inner', left_on=0, right_on=0)
-    
     inner_join_df.sort_values(by=0, inplace=True)    
+    inner_join_df.drop([0], axis=1, inplace=True)
     return inner_join_df
     
 def parse() -> argparse.Namespace:
@@ -188,7 +188,13 @@ def main():
 
     centroids = kmeansplusplus(K, points_dataframe)
     points = points_dataframe.astype(float).values.tolist()
+    points.extend(centroids)
+
     print(f"Initial centroids: {centroids}")
+    print(f"Number of points: {len(points)}")
+    for i, point in enumerate(points):
+        print(f"Point {i+1}: {point}")
+    print()
     final_centroids = mykmeanssp.fit(points, centroids, K, iterations, epsilon)
     
     print(f"Final centroids: {final_centroids}")

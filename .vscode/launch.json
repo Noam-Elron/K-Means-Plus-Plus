@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Debug Python script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/kmeans_pp.py",
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "justMyCode": false,
+            "args": ["3", "333", "0", "./tests/input_1_db_1.txt", "./tests/input_1_db_2.txt"],
+        },
+        {
+            "name": "C++: Attach to process",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/your_extension.so",  // compiled C extension
+            "processId": "${command:pickProcess}",  // Choose the running process (Python)
+            "MIMode": "gdb",   // Use 'lldb' for macOS if needed
+            "miDebuggerPath": "/usr/bin/gdb",  // Path to gdb
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+        }
+    ]
+}
